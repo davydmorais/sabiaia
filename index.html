@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Como a IA faz um vídeo do zero · Sabia, IA?</title>
+<meta name="description" content="O passo a passo que o canal Sabia, IA? usa pra fazer cada vídeo com inteligência artificial, com os prompts prontos.">
+<meta property="og:title" content="Como a IA faz um vídeo do zero">
+<meta property="og:description" content="O passo a passo do Sabia, IA?, com os prompts prontos pra copiar.">
+<meta property="og:image" content="https://davydmorais.github.io/sabiaia/capa.png">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#050B1C">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23FF8A3D'/%3E%3Ccircle cx='60' cy='40' r='10' fill='%23050B1C'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fundo:#050B1C; --fundo2:#0B1A33; --card:#0F2142; --borda:#22406C;
+    --laranja:#FF8A3D; --rosa:#FF4FA3; --amarelo:#F2CD37; --verde:#4ED39B; --azul:#4C8DFF;
+    --texto:#F5F7FB; --cinza:#A3B3CC; --apagado:#6A7EA0;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--fundo);color:var(--texto);font-family:Nunito,system-ui,sans-serif;font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;-webkit-print-color-adjust:exact;print-color-adjust:exact;overflow-x:hidden}
+  /* fundo vivo, igual aos vídeos */
+  .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+  .bg i{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(90px);opacity:.28}
+  .bg i:nth-child(1){background:#1F55C9;top:-30vmax;left:-20vmax;animation:anda 22s ease-in-out infinite alternate}
+  .bg i:nth-child(2){background:#FF4FA3;bottom:-40vmax;right:-30vmax;opacity:.16;animation:anda 26s ease-in-out infinite alternate-reverse}
+  .bg i:nth-child(3){background:#FF8A3D;top:40%;left:50%;width:40vmax;height:40vmax;opacity:.10;animation:anda 30s ease-in-out infinite alternate}
+  @keyframes anda{to{transform:translate(8vmax,6vmax) scale(1.1)}}
+  .grao{position:fixed;inset:0;z-index:-1;opacity:.18;mix-blend-mode:overlay;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  .wrap{max-width:720px;margin:0 auto;padding:0 18px}
+  h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;font-weight:700;line-height:1.08;margin:0}
+  h1{font-size:clamp(40px,11vw,68px);letter-spacing:-1px}
+  h2{font-size:clamp(30px,8vw,44px);letter-spacing:-.5px}
+  h3{font-size:21px;font-weight:600}
+  p{margin:0}
+  b,strong{color:var(--texto);font-weight:800}
+  .mt{margin-top:16px}
+  .marca{position:relative;display:inline-block;padding:0 6px;color:var(--fundo);z-index:0}
+  .marca:before{content:"";position:absolute;inset:6% -2px 2%;background:var(--laranja);border-radius:10px;z-index:-1;transform-origin:left;transform:rotate(-1.5deg)}
+  .marca.rosa:before{background:var(--rosa)}
+  .marca.am:before{background:var(--amarelo)}
+
+  /* topo */
+  header{padding:22px 0 8px}
+  .barra{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:Fredoka;font-weight:700;font-size:19px;color:var(--texto);text-decoration:none}
+  .logo svg{width:40px;height:38px}
+  .pill{font-weight:900;font-size:11.5px;letter-spacing:2.5px;border:1.5px solid var(--borda);border-radius:99px;padding:7px 13px;color:var(--cinza);white-space:nowrap}
+  .pill i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--laranja);box-shadow:0 0 10px var(--laranja);margin-right:7px;vertical-align:1px}
+
+  /* hero */
+  .hero{padding:34px 0 10px;text-align:left}
+  .hero .lead{font-size:18.5px;color:var(--cinza);margin-top:20px;max-width:34em}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .tag{background:var(--card);border:1.5px solid var(--borda);border-radius:12px;padding:7px 12px;font-weight:800;font-size:14px;white-space:nowrap}
+  .tag span{color:var(--laranja)}
+  .numeros{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:26px}
+  .numeros div{background:var(--card);border:1.5px solid var(--borda);border-radius:18px;padding:14px 16px}
+  .numeros strong{display:block;font-family:Fredoka;font-size:28px;line-height:1;color:var(--amarelo)}
+  .numeros span{font-size:14px;color:var(--cinza)}
+  .bts{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .bt{display:inline-flex;align-items:center;gap:8px;font-weight:900;font-size:16px;border-radius:14px;padding:13px 20px;text-decoration:none;color:var(--fundo);background:var(--laranja)}
+  .bt.sec{background:transparent;color:var(--texto);border:1.5px solid var(--borda)}
+
+  /* índice */
+  .indice{margin-top:34px;background:var(--card);border:1.5px solid var(--borda);border-radius:22px;padding:18px 18px 8px}
+  .indice .rot{font-weight:900;font-size:12px;letter-spacing:2.5px;color:var(--laranja);margin-bottom:6px}
+  .indice ol{list-style:none;margin:0;padding:0;counter-reset:i}
+  .indice li{counter-increment:i;border-top:1px solid #1A3358}
+  .indice li:first-child{border-top:0}
+  .indice a{display:flex;align-items:center;gap:12px;padding:11px 0;color:var(--texto);text-decoration:none;font-weight:800;font-size:16px}
+  .indice a:before{content:counter(i);flex:none;width:30px;height:30px;border-radius:9px;border:2px solid var(--laranja);color:var(--laranja);
+    font-family:Fredoka;font-size:15px;display:flex;align-items:center;justify-content:center}
+  .indice a small{margin-left:auto;font-weight:700;font-size:12.5px;color:var(--apagado);white-space:nowrap}
+
+  /* etapas */
+  section.et{padding:56px 0 6px;scroll-margin-top:10px}
+  .num{font-weight:900;font-size:12.5px;letter-spacing:3px;color:var(--rosa);margin-bottom:12px}
+  .num em{font-style:normal;color:var(--apagado)}
+  .et > .wrap > p.lead{font-size:17.5px;color:var(--cinza);margin-top:16px}
+  .card{background:var(--card);border:1.5px solid var(--borda);border-radius:20px;padding:18px 18px;margin-top:16px}
+  .card p{color:var(--cinza);font-size:16px}
+  .card h3{margin-bottom:6px}
+  .duas{display:grid;grid-template-columns:1fr;gap:12px;margin-top:4px}
+  .duas .card{margin-top:12px}
+  .ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px}
+  .l{background:linear-gradient(160deg,#FFA766,#E8661B)} .a{background:linear-gradient(160deg,#4C8DFF,#1F55C9)}
+  .v{background:linear-gradient(160deg,#4ED39B,#16955E)} .y{background:linear-gradient(160deg,#FFD866,#D9A400)}
+  .r{background:linear-gradient(160deg,#FF7DBE,#D62C7F)}
+
+  /* prompt copiável */
+  .prompt{margin-top:16px;background:#030814;border:1.5px dashed var(--laranja);border-radius:18px;padding:14px 16px 16px;position:relative}
+  .prompt .cab{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+  .prompt .rot{font-weight:900;font-size:11.5px;letter-spacing:2.5px;color:var(--laranja)}
+  .prompt button{font:inherit;font-weight:900;font-size:13px;color:var(--fundo);background:var(--laranja);border:0;border-radius:10px;padding:7px 12px;cursor:pointer}
+  .prompt button.ok{background:var(--verde)}
+  .prompt p{font-family:"JetBrains Mono",monospace;font-size:13.8px;line-height:1.65;color:var(--texto);white-space:pre-wrap;word-break:break-word}
+  .prompt p mark{background:none;color:var(--amarelo)}
+
+  /* aviso */
+  .aviso{margin-top:16px;display:flex;gap:12px;align-items:flex-start;background:#1A1808;border:1.5px solid #6B5A1E;border-left:5px solid var(--amarelo);border-radius:16px;padding:14px 16px}
+  .aviso .ico{margin:0;flex:none;width:34px;height:34px;font-size:17px}
+  .aviso p{color:#E2D8B0;font-size:15.5px}
+  .novo{display:inline-block;font-weight:900;font-size:11px;letter-spacing:2px;color:var(--fundo);background:var(--verde);border-radius:7px;padding:3px 8px;margin-left:8px;vertical-align:4px}
+
+  /* listas */
+  .check{list-style:none;padding:0;margin:8px 0 0;display:flex;flex-direction:column;gap:10px}
+  .check li{color:var(--cinza);font-size:16px;padding-left:32px;position:relative}
+  .check li:before{content:"✓";position:absolute;left:0;top:2px;width:22px;height:22px;border-radius:7px;background:var(--laranja);color:var(--fundo);
+    font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .check.x li:before{content:"✕";background:#3A2340;color:var(--rosa)}
+
+  /* transições */
+  .trans{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+  .trans div{background:#0A1834;border:1.5px solid var(--borda);border-radius:16px;padding:12px 13px}
+  .trans b{display:block;font-family:Fredoka;font-weight:600;font-size:16px;color:var(--amarelo)}
+  .trans span{font-size:14px;color:var(--cinza);line-height:1.4;display:block;margin-top:3px}
+
+  /* linha do tempo das palavras */
+  .palavras{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .palavras span{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:#0A1834;border:1px solid var(--borda);border-radius:8px;padding:5px 8px;color:var(--cinza)}
+  .palavras span b{color:var(--amarelo);font-weight:500}
+  .palavras span.on{border-color:var(--laranja);color:var(--texto)}
+
+  /* celular da montagem */
+  .split{display:grid;grid-template-columns:118px 1fr;gap:16px;align-items:center;margin-top:16px}
+  .cel{width:118px;height:210px;border-radius:20px;border:3px solid #3A5A8C;background:radial-gradient(circle at 50% 60%,#1C3B6B,#050B1C);
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 8px 40px;position:relative;overflow:hidden}
+  .cel .leg{font-family:Fredoka;font-weight:700;font-size:15px;color:#fff;text-shadow:0 2px 0 #000}
+  .cel .leg b{color:var(--amarelo)}
+  .cel .cubo{position:absolute;top:40px;width:46px;height:46px;border-radius:10px;background:linear-gradient(160deg,#FFA766,#E8661B);transform:rotate(18deg);box-shadow:0 10px 30px #FF8A3D55}
+  .split .card{margin-top:0}
+
+  /* final */
+  .final{padding:70px 0 30px;text-align:center}
+  .final svg.passaro{width:120px;height:112px}
+  .perfil{margin:28px auto 0;max-width:460px;display:flex;align-items:center;gap:14px;background:var(--card);border:1.5px solid var(--borda);border-radius:22px;padding:14px 16px;text-align:left}
+  .perfil .av{width:58px;height:58px;border-radius:50%;background:var(--fundo);border:2.5px solid var(--laranja);display:flex;align-items:center;justify-content:center;flex:none}
+  .perfil .nm{font-family:Fredoka;font-weight:700;font-size:20px}
+  .perfil .pl{font-size:14px;color:var(--cinza)}
+  .redes{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px}
+  footer{padding:20px 0 40px;text-align:center;font-size:13px;color:var(--apagado)}
+
+  @media (min-width:640px){
+    .duas{grid-template-columns:1fr 1fr}
+    .numeros{grid-template-columns:repeat(4,1fr)}
+    .trans{grid-template-columns:repeat(3,1fr)}
+    .split{grid-template-columns:150px 1fr}
+    .cel{width:150px;height:266px}
+  }
+  @media (prefers-reduced-motion:reduce){.bg i{animation:none}}
+
+  /* PDF */
+  @media print{
+    @page{size:A4;margin:12mm 0}
+    body{font-size:14.5px;background:var(--fundo)}
+    .bg,.grao{position:absolute}
+    .bts,.prompt button,.indice a small{display:none}
+    section.et{padding-top:26px;break-before:page}
+    .card,.prompt,.aviso,.trans div{break-inside:avoid}
+    .wrap{max-width:none;padding:0 16mm}
+    .duas{grid-template-columns:1fr 1fr}
+    .numeros{grid-template-columns:repeat(4,1fr)}
+    .trans{grid-template-columns:repeat(3,1fr)}
+    .final{break-before:page}
+  }
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div><div class="grao"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="passaro">
+      <path d="M38 128 L6 150 L14 118 Z" fill="#5E5246"/>
+      <path d="M30 120 C30 70 70 40 112 42 C150 44 172 72 168 108 C164 150 128 176 86 174 C52 172 30 152 30 120 Z" fill="#7A6A58"/>
+      <path d="M70 112 C80 94 118 92 150 110 C152 146 124 170 88 170 C66 168 56 140 70 112 Z" fill="#FF8A3D"/>
+      <path d="M44 108 C62 86 100 88 112 118 C96 140 62 146 40 132 Z" fill="#5E5246"/>
+      <g stroke="#FFC79E" stroke-width="3.5" fill="none" stroke-linecap="round"><path d="M54 112 H74 L84 122"/><path d="M50 124 H70 L78 132"/></g>
+      <circle cx="86" cy="122" r="4.5" fill="#FFC79E"/><circle cx="80" cy="132" r="4.5" fill="#FFC79E"/>
+      <path d="M160 76 L192 86 L160 96 Z" fill="#F2C230"/>
+      <circle cx="132" cy="74" r="17" fill="#F2C230"/><circle cx="132" cy="74" r="12" fill="#0B1A33"/><circle cx="136" cy="70" r="4.2" fill="#fff"/>
+    </g>
+  </defs>
+</svg>
+
+<header class="wrap">
+  <div class="barra">
+    <a class="logo" href="#topo"><svg viewBox="0 0 200 190"><use href="#passaro"/></svg>Sabia, IA?</a>
+    <span class="pill"><i></i>GUIA GRÁTIS</span>
+  </div>
+</header>
+
+<main id="topo">
+<div class="wrap hero">
+  <h1>Como a IA faz um vídeo <span class="marca">do zero</span></h1>
+  <p class="lead">Cada vídeo do <b>Sabia, IA?</b> é feito com inteligência artificial: a pesquisa, o roteiro, a voz, a animação 3D, os sons e a edição. Aqui está o processo que a gente usa hoje, etapa por etapa, com <b>prompts prontos pra copiar</b> e pedir pro Claude.</p>
+  <div class="tags">
+    <span class="tag"><span>✳</span> Claude Code</span>
+    <span class="tag"><span>🎙</span> ElevenLabs</span>
+    <span class="tag"><span>👂</span> Whisper</span>
+    <span class="tag"><span>🎬</span> HyperFrames</span>
+    <span class="tag"><span>🧊</span> Three.js</span>
+    <span class="tag"><span>✂</span> FFmpeg</span>
+  </div>
+  <div class="numeros">
+    <div><strong>9</strong><span>etapas, do tema ao post</span></div>
+    <div><strong>9:16</strong><span>vertical, tela cheia</span></div>
+    <div><strong>0</strong><span>quadros desenhados à mão</span></div>
+    <div><strong>1</strong><span>diretor: o Claude Code</span></div>
+  </div>
+  <div class="bts">
+    <a class="bt" href="#e1">Começar ↓</a>
+    <a class="bt sec" href="guia-como-a-ia-faz-um-video.pdf" download>Baixar em PDF</a>
+  </div>
+
+  <nav class="indice" aria-label="Etapas">
+    <div class="rot">O MAPA</div>
+    <ol>
+      <li><a href="#e1">Tema e referências <small>você + Claude</small></a></li>
+      <li><a href="#e2">Fatos e roteiro <small>Claude</small></a></li>
+      <li><a href="#e3">Voz <small>ElevenLabs</small></a></li>
+      <li><a href="#e4">Tempo de cada palavra <small>Whisper</small></a></li>
+      <li><a href="#e5">Cenas em 3D <small>HyperFrames</small></a></li>
+      <li><a href="#e6">Teste rápido <small>folha de quadros</small></a></li>
+      <li><a href="#e7">Sons e montagem <small>FFmpeg</small></a></li>
+      <li><a href="#e8">Conferência final <small>checklist</small></a></li>
+      <li><a href="#e9">Capa e post <small>YouTube + Instagram</small></a></li>
+    </ol>
+  </nav>
+
+  <div class="aviso"><div class="ico y">💡</div><p><b>O que é o Claude Code?</b> É o Claude rodando no seu computador. Ele lê e cria arquivos e roda programas, por isso consegue ser o "diretor" do vídeo e chamar uma ferramenta diferente em cada etapa. Mas <b>você continua sendo o chefe</b>: nada avança sem você aprovar.</p></div>
+</div>
+
+<!-- 1 -->
+<section class="et" id="e1"><div class="wrap">
+  <div class="num">ETAPA 1 <em>/ 9</em></div>
+  <h2>Tema e <span class="marca">referências</span></h2>
+  <p class="lead">Um bom tema é uma <b>curiosidade real com uma virada</b>: algo que a pessoa não sabia e que muda o jeito de ver o assunto. Antes de escrever uma linha, a gente estuda o que já viralizou sobre aquele tema.</p>
+  <div class="duas">
+    <div class="card"><div class="ico r">🔎</div><h3>Radar, não cópia</h3><p>Vídeos de outros canais mostram <b>o que prende</b> (o gancho, o ritmo, o visual). Eles servem de radar. O roteiro é sempre escrito do zero, com fatos de fontes próprias.</p></div>
+    <div class="card"><div class="ico a">📋</div><h3>Anote o que funciona</h3><p>Pra cada referência, anote 3 coisas: <b>o que aparece nos 2 primeiros segundos</b>, como a informação é mostrada e o que faz a pessoa ficar até o fim.</p></div>
+  </div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · REFERÊNCIAS</span><button type="button">Copiar</button></div>
+<p>Quero fazer um vídeo curto sobre <mark>[TEMA]</mark>. Me diga 5 jeitos diferentes de contar essa história que funcionam em vídeo vertical, cada um com um gancho pros 2 primeiros segundos. Depois, pra cada referência que eu te mandar, anote: o que aparece no começo, como o fato é mostrado na tela e o que segura a pessoa até o fim. Não copie texto de ninguém.</p></div>
+</div></section>
+
+<!-- 2 -->
+<section class="et" id="e2"><div class="wrap">
+  <div class="num">ETAPA 2 <em>/ 9</em></div>
+  <h2>Fatos e <span class="marca">roteiro</span></h2>
+  <p class="lead">O Claude pesquisa o fato em <b>várias fontes</b> e avisa onde elas se contradizem. O que não fecha, sai do texto. Depois ele escreve em <b>frases curtas</b>, no tom de quem conta uma história pra um amigo.</p>
+  <div class="card"><h3>A estrutura que prende</h3>
+    <ul class="check">
+      <li><b>Gancho</b> na primeira frase ("Sabia que...?"), sem enrolação</li>
+      <li><b>A história</b>, com um fato concreto por frase</li>
+      <li><b>A virada</b>: o detalhe que ninguém espera</li>
+      <li><b>Fecho</b> que fica na cabeça, mais o pedido de comentário</li>
+    </ul>
+  </div>
+  <div class="aviso"><div class="ico y">⏱</div><p><b>O tamanho é o da história.</b> Não existe tempo mágico. Tem vídeo nosso de 40 segundos e de mais de 2 minutos. Se cada frase traz algo novo, a pessoa fica.</p></div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · ROTEIRO</span><button type="button">Copiar</button></div>
+<p>Pesquise em pelo menos 3 fontes a história de <mark>[TEMA]</mark>. Liste os fatos com o link de cada um e marque o que as fontes contradizem. Depois escreva um roteiro de vídeo curto, em frases curtas e tom de conversa: comece com uma frase que prenda, conte a história, faça a virada e termine com algo que fique na cabeça. Use só os fatos confirmados e me mostre antes de seguir.</p></div>
+</div></section>
+
+<!-- 3 -->
+<section class="et" id="e3"><div class="wrap">
+  <div class="num">ETAPA 3 <em>/ 9</em></div>
+  <h2>A <span class="marca rosa">voz</span></h2>
+  <p class="lead">A narração é gerada na <b>ElevenLabs</b>, com uma voz brasileira natural. A gente acelera um pouco depois (uns 1,2x): fala mais rápida deixa o vídeo com mais energia.</p>
+  <div class="duas">
+    <div class="card"><div class="ico a">🎙</div><h3>Licença importa</h3><p>Pra vídeo monetizado, use um plano que <b>libera uso comercial</b> (na ElevenLabs, o pago mais barato já libera). Áudio feito no plano grátis não vira comercial depois. Quer começar sem pagar? O <b>Kokoro</b> roda no seu PC e permite uso comercial.</p></div>
+    <div class="card"><div class="ico l">🗣</div><h3>Escreva normal</h3><p>Numa voz boa, escreva <b>"GTA 6", "2026", "IA"</b> do jeito comum. Escrever como se fala deixa a voz estranha. Só se <b>uma palavra</b> sair errada, teste 2 ou 3 grafias daquela frase e escolha de ouvido.</p></div>
+  </div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · PRONÚNCIA</span><button type="button">Copiar</button></div>
+<p>A palavra <mark>[PALAVRA]</mark> saiu errada na narração. Gere só a frase "<mark>[FRASE]</mark>" com 3 grafias diferentes dessa palavra, numeradas, pra eu escolher a que soa mais natural. Depois anote a escolhida num arquivo de pronúncia pra usar sempre.</p></div>
+</div></section>
+
+<!-- 4 -->
+<section class="et" id="e4"><div class="wrap">
+  <div class="num">ETAPA 4 <em>/ 9</em></div>
+  <h2>O tempo de <span class="marca am">cada palavra</span><span class="novo">NOVO</span></h2>
+  <p class="lead">Esse é o truque que mais economizou trabalho. Um programa de transcrição chamado <b>Whisper</b> (grátis, roda no seu PC) "escuta" a narração e anota o segundo exato em que cada palavra começa e termina.</p>
+  <div class="card"><h3>Como fica o arquivo</h3>
+    <div class="palavras">
+      <span>Sabia <b>0,00</b></span><span>que <b>0,31</b></span><span class="on">a IA <b>0,45</b></span><span>nunca <b>0,82</b></span><span>leu <b>1,10</b></span><span class="on">uma letra? <b>1,34</b></span>
+    </div>
+    <p class="mt">Toda cena, legenda e efeito sonoro fica <b>presa a uma palavra</b>, nunca a um segundo fixo. Se você trocar a voz, ou cortar uma frase, é só gerar o vídeo de novo: tudo se ajusta sozinho.</p>
+  </div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · TEMPOS</span><button type="button">Copiar</button></div>
+<p>Instale o faster-whisper no meu PC e transcreva <mark>[voz.mp3]</mark> com o tempo de cada palavra, salvando num arquivo words.json. Compare o texto que ele ouviu com o roteiro e me avise de qualquer palavra diferente. A partir daqui, amarre toda cena e legenda aos tempos desse arquivo.</p></div>
+</div></section>
+
+<!-- 5 -->
+<section class="et" id="e5"><div class="wrap">
+  <div class="num">ETAPA 5 <em>/ 9</em></div>
+  <h2>Cenas <span class="marca">em 3D</span></h2>
+  <p class="lead">Ninguém desenha quadro por quadro. O <b>HyperFrames</b> transforma uma página da web em vídeo. O Claude escreve cada cena em código, com objetos 3D feitos na biblioteca <b>Three.js</b>, e o HyperFrames grava tudo em MP4.</p>
+  <div class="duas">
+    <div class="card"><div class="ico v">🧩</div><h3>Peças reaproveitáveis</h3><p>Mascotes, celular, holograma, cidade de blocos: tudo que se repete fica <b>guardado numa caixa de peças</b>. O próximo vídeo começa com metade pronta.</p></div>
+    <div class="card"><div class="ico r">🎭</div><h3>Demonstre, não ilustre</h3><p>Se o vídeo fala de um golpe, mostre o golpe acontecendo na tela de um celular. Uma <b>demonstração</b> explica mais do que um ícone bonito parado.</p></div>
+  </div>
+  <div class="card"><h3>Regras de movimento <span class="novo">NOVO</span></h3>
+    <p>O que separa vídeo de apresentação de slides:</p>
+    <ul class="check">
+      <li><b>A câmera nunca para</b>: sempre um zoom lento ou uma deriva</li>
+      <li><b>Fundo vivo</b>, com manchas de cor que andam e um granulado leve</li>
+      <li><b>Texto entra com impacto</b>: desfocado e grande, encaixando no lugar</li>
+      <li><b>Número e fato com cara de jornal</b>: marca-texto, círculo tracejado e etiqueta "FONTE"</li>
+      <li><b>Pelo menos 2 tipos de transição</b> por vídeo, um deles em 3D</li>
+    </ul>
+  </div>
+  <div class="trans">
+    <div><b>Mergulho</b><span>a câmera atravessa um objeto e cai na cena seguinte</span></div>
+    <div><b>Cartão girando</b><span>a tela nova chega do fundo, girando no espaço</span></div>
+    <div><b>Chicote</b><span>a cena sai de lado com rastro de velocidade</span></div>
+    <div><b>Foco</b><span>a cena velha desfoca, a nova chega nítida</span></div>
+    <div><b>Máscara</b><span>a cena nova surge por dentro de uma letra ou ícone</span></div>
+    <div><b>Luz que vaza</b><span>um brilho cobre a tela no corte, pro final</span></div>
+  </div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · CENAS</span><button type="button">Copiar</button></div>
+<p>Use o HyperFrames pra animar este roteiro em vídeo vertical 9:16, tela cheia, com cenas 3D em Three.js. Amarre cada cena aos tempos do words.json. Regras: câmera sempre em movimento, fundo com gradiente granulado que anda, texto que entra desfocado e encaixa, marca-texto e etiqueta de fonte nos fatos, pelo menos 2 tipos de transição (uma em 3D). Personagens como bonequinhos expressivos, sem logos de marcas e sem rostos de pessoas reais.</p></div>
+</div></section>
+
+<!-- 6 -->
+<section class="et" id="e6"><div class="wrap">
+  <div class="num">ETAPA 6 <em>/ 9</em></div>
+  <h2>Teste <span class="marca am">rápido</span><span class="novo">NOVO</span></h2>
+  <p class="lead">Gravar o vídeo inteiro em alta qualidade demora. Por isso, antes, o Claude gera uma <b>folha de quadros</b>: dezenas de imagens pequenas, uma a cada meio segundo, numa folha só. Em um olhar dá pra ver o vídeo todo.</p>
+  <div class="aviso"><div class="ico y">🔍</div><p><b>Na folha, procure:</b> dá pra saber onde a cena acontece sem ler a legenda? O objeto principal aparece inteiro, sem braço cortado? Tem algum quadro preto ou piscando? Corrigir aqui custa minutos. Depois do render, custa horas.</p></div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · TESTE</span><button type="button">Copiar</button></div>
+<p>Antes de renderizar o vídeo final, gere uma folha de contato em baixa resolução com um quadro a cada 0,5 segundo. Olhe a folha você mesmo e me diga: cena sem contexto, objeto cortado, texto fora da tela ou quadro preto. Corrija o que achar e só depois renderize, com 1 worker.</p></div>
+</div></section>
+
+<!-- 7 -->
+<section class="et" id="e7"><div class="wrap">
+  <div class="num">ETAPA 7 <em>/ 9</em></div>
+  <h2>Sons e <span class="marca">montagem</span></h2>
+  <div class="split">
+    <div class="cel"><div class="cubo"></div><div class="leg">a IA <b>nunca</b></div></div>
+    <div class="card"><h3>Tela cheia</h3><p>A animação ocupa a <b>tela inteira</b> e a legenda aparece <b>palavra por palavra</b>, no tempo exato da voz. <b>Nunca</b> use pedaço de vídeo de outro canal.</p></div>
+  </div>
+  <div class="card"><div class="ico l">🔊</div><h3>Efeitos feitos por código</h3><p>Whoosh na transição, impacto na virada, clique na tela do celular: os efeitos são <b>gerados por programa</b>, sem baixar nada de ninguém, e cada um cai no instante exato da palavra. Ficam <b>bem abaixo da voz</b> (uns 18 dB), e sem música de fundo: a voz é a estrela.</p></div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · MONTAGEM</span><button type="button">Copiar</button></div>
+<p>Com o FFmpeg, monte o vídeo final 1080x1920 com <mark>[ANIMACAO.mp4]</mark> em tela cheia, a narração e os efeitos sonoros mixados uns 18 dB abaixo da voz, legenda palavra por palavra pelo words.json e volume em -14 LUFS (pico até -1 dBTP). Faça também uma cópia com menos de 10 MB pra postar. Me mostre a duração, o tamanho e 3 quadros.</p></div>
+</div></section>
+
+<!-- 8 -->
+<section class="et" id="e8"><div class="wrap">
+  <div class="num">ETAPA 8 <em>/ 9</em></div>
+  <h2>Conferência <span class="marca rosa">final</span></h2>
+  <p class="lead">A IA erra, e erra com confiança. Por isso nenhum vídeo sai sem passar por esta lista, de preferência com um programa que confere sozinho o que dá pra medir.</p>
+  <div class="card"><h3>Checklist antes de postar</h3>
+    <ul class="check">
+      <li><b>Fatos</b> conferidos, sem número que as fontes contradizem</li>
+      <li><b>Pronúncia</b> ouvida em todo nome estrangeiro</li>
+      <li><b>Transcrição</b> da voz final batendo com o roteiro</li>
+      <li><b>Zero quadros pretos</b> ou saltos na cópia de postar</li>
+      <li><b>Quadros de todas as cenas</b>, não só um por cena</li>
+      <li><b>Volume</b> igual ao dos outros vídeos (-14 LUFS)</li>
+      <li>Mudou uma cena? <b>Assista o vídeo inteiro de novo</b></li>
+    </ul>
+  </div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · CONFERÊNCIA</span><button type="button">Copiar</button></div>
+<p>Confira o vídeo <mark>[video-postar.mp4]</mark>: meça o volume (LUFS e pico), procure quadros pretos ou saltos, transcreva o áudio e compare com o roteiro, e tire quadros de todas as cenas pra eu ver. Me entregue uma lista curta do que passou e do que falhou.</p></div>
+</div></section>
+
+<!-- 9 -->
+<section class="et" id="e9"><div class="wrap">
+  <div class="num">ETAPA 9 <em>/ 9</em></div>
+  <h2>Capa e <span class="marca am">post</span><span class="novo">NOVO</span></h2>
+  <div class="duas">
+    <div class="card"><div class="ico r">🖼</div><h3>Capa que para o dedo</h3><p>Suba o vídeo como privado no YouTube Studio e, em Miniatura, clique em <b>"Receber sugestões"</b>: a IA do próprio YouTube cria opções de capa. Escolha a que combina com as outras do canal e use a <b>mesma imagem</b> no Reel.</p></div>
+    <div class="card"><div class="ico v">🗓</div><h3>Agende os dois juntos</h3><p>Um agendador (a gente usa o <b>Metricool</b>, que tem plano grátis) solta o Short e o Reel no mesmo horário. Todo dia, mesma hora: o público aprende quando voltar.</p></div>
+  </div>
+  <div class="aviso"><div class="ico y">#</div><p><b>Hashtag só do assunto do vídeo.</b> Usar hashtag de outro tema pra pegar carona é tratado como enganoso pelo YouTube e pode tirar o vídeo da busca. No Instagram, até 5.</p></div>
+  <div class="prompt"><div class="cab"><span class="rot">PROMPT · TEXTO DO POST</span><button type="button">Copiar</button></div>
+<p>Escreva o texto do post deste vídeo: um título curto pro YouTube Shorts que dê vontade de clicar sem mentir, uma descrição de 2 linhas e uma legenda pro Instagram com até 5 hashtags, todas sobre o assunto do vídeo. Tom de conversa, sem cara de propaganda.</p></div>
+
+  <div class="card" style="margin-top:22px"><div class="ico a">🧠</div><h3>Bônus: o Claude que lembra</h3><p>Pra não explicar tudo de novo a cada vídeo, guarde as regras, as lições e as decisões em <b>notas pequenas</b> numa pasta (a gente usa o Obsidian). O Claude lê só a nota certa antes de cada etapa. Errou uma vez? Vira lição anotada e <b>não se repete</b>. E o trabalho simples (medir arquivo, conferir lista) vai pra um modelo mais barato, que gasta menos do seu limite.</p></div>
+</div></section>
+
+<!-- final -->
+<section class="final"><div class="wrap">
+  <svg class="passaro" viewBox="0 0 200 190"><use href="#passaro"/></svg>
+  <h2 style="margin-top:14px;font-size:clamp(40px,11vw,60px)">Gostou?</h2>
+  <div style="margin-top:10px"><h2 class="marca" style="font-size:clamp(38px,10vw,58px)">Segue o canal</h2></div>
+  <p class="lead" style="color:var(--cinza);max-width:30em;margin:24px auto 0">Todo dia tem uma curiosidade nova sobre inteligência artificial: a história, os erros bizarros e como ela funciona por dentro. E cada vídeo é feito com IA, do jeito deste guia.</p>
+  <div class="perfil">
+    <div class="av"><svg width="46" height="43" viewBox="0 0 200 190"><use href="#passaro"/></svg></div>
+    <div><div class="nm">@canalsabiaia</div><div class="pl">Sabia, IA? · YouTube · Instagram</div></div>
+  </div>
+  <div class="redes">
+    <a class="bt" href="https://www.instagram.com/canalsabiaia/">Instagram</a>
+    <a class="bt sec" href="https://www.youtube.com/@canalsabiaia">YouTube</a>
+  </div>
+</div></section>
+</main>
+
+<footer class="wrap">Guia do canal Sabia, IA? · atualizado em novembro de 2026</footer>
+
+<script>
+  document.querySelectorAll('.prompt button').forEach(function(b){
+    b.addEventListener('click',function(){
+      var t=b.closest('.prompt').querySelector('p').innerText.trim();
+      function ok(){b.textContent='Copiado ✓';b.classList.add('ok');setTimeout(function(){b.textContent='Copiar';b.classList.remove('ok')},1800)}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(ok,fallback)}else{fallback()}
+      function fallback(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){}a.remove()}
+    });
+  });
+</script>
+</body>
+</html>

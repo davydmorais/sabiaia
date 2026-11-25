@@ -55,7 +55,7 @@
   .pill i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--laranja);box-shadow:0 0 10px var(--laranja);margin-right:7px;vertical-align:1px}
 
   /* hero */
-  .hero{padding:34px 0 10px;text-align:left}
+  .hero{padding-top:34px;padding-bottom:10px}
   .hero .lead{font-size:18.5px;color:var(--cinza);margin-top:20px;max-width:34em}
   .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
   .tag{background:var(--card);border:1.5px solid var(--borda);border-radius:12px;padding:7px 12px;font-weight:800;font-size:14px;white-space:nowrap}
@@ -145,7 +145,7 @@
   .perfil .nm{font-family:Fredoka;font-weight:700;font-size:20px}
   .perfil .pl{font-size:14px;color:var(--cinza)}
   .redes{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px}
-  footer{padding:20px 0 40px;text-align:center;font-size:13px;color:var(--apagado)}
+  footer{padding-top:20px;padding-bottom:40px;text-align:center;font-size:13px;color:var(--apagado)}
 
   @media (min-width:640px){
     .duas{grid-template-columns:1fr 1fr}
@@ -160,7 +160,8 @@
   @media print{
     @page{size:A4;margin:12mm 0}
     body{font-size:14.5px;background:var(--fundo)}
-    .bg,.grao{position:absolute}
+    .bg,.grao{display:none}
+    body{background:linear-gradient(#0B1A33,#050B1C)}
     .bts,.prompt button,.indice a small{display:none}
     section.et{padding-top:26px;break-before:page}
     .card,.prompt,.aviso,.trans div{break-inside:avoid}
